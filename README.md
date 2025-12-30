@@ -1,36 +1,43 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Precificador de Baterias Automotivas 🔋
 
-## Getting Started
+Aplicativo Web progressivo (PWA) desenvolvido para substituir planilhas de precificação, oferecendo cálculo dinâmico de preços baseado em margem de lucro e custo, com sincronização em tempo real entre dispositivos.
 
-First, run the development server:
+## 🏗 Arquitetura e Decisões de Design
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+Este projeto segue princípios de **Clean Architecture** e **Separation of Concerns (SoC)** para garantir escalabilidade e testabilidade.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Estrutura de Pastas (`src/`)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+A aplicação não segue apenas o padrão do framework, mas separa a lógica de negócio da infraestrutura:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- **`app/`**: Camada de Apresentação (UI). Contém apenas componentes React, Páginas e Layouts. Responsável por *exibir* dados, não processá-los.
+- **`core/`**: O "Coração" do sistema.
+  - `domain/`: Contém a **Lógica de Negócio Pura**. Funções TypeScript que calculam preços. Elas não sabem que o React ou o Firebase existem. Isso facilita Testes Unitários (TDD).
+  - `types/`: Contratos e Interfaces (TypeScript). Evitamos `any` a todo custo.
+- **`services/`**: Camada de Infraestrutura/Gateway. Responsável por buscar dados externos (Firebase Firestore). Se trocarmos o banco de dados no futuro, apenas esta pasta muda.
+- **`lib/`**: Configurações de bibliotecas de terceiros (inicialização do Firebase).
 
-## Learn More
+### 🧠 Regras de Negócio (Core Domain)
 
-To learn more about Next.js, take a look at the following resources:
+O sistema não armazena o preço final. Ele armazena o **Custo** e calcula o preço final em tempo de execução ("on the fly") baseado em variáveis globais.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+**Fórmula de Precificação:**
+1. **Preço Base (Cartão)** = `Custo do Produto` / `Markup Divisor` (Ex: 0.7 para 30%)
+2. **Preço à Vista** = `Preço Base` * (1 - `Desconto à Vista`)
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Isso permite que a alteração de uma única taxa (ex: aumento de imposto) recalcule instantaneamente o preço de 1.000 produtos.
 
-## Deploy on Vercel
+## 🛠 Tecnologias
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- **Framework**: Next.js 14+ (App Router)
+- **Linguagem**: TypeScript (Strict Mode)
+- **Estilização**: Tailwind CSS (Mobile-First)
+- **Banco de Dados**: Firebase Firestore (NoSQL)
+- **State/Data**: React Hooks Customizados
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 🚀 Configuração
+
+1. Clone o repositório.
+2. Crie um arquivo `.env.local` na raiz com as credenciais do Firebase (veja `.env.example`).
+3. Instale as dependências: `npm install`.
+4. Rode o servidor: `npm run dev`.
