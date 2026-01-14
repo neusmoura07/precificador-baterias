@@ -1,20 +1,19 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation"; // Importado para o redirecionamento
+import { Lock } from "lucide-react"; // Ícone do cadeado
 import { usePricedProducts } from "@/hooks/usePricedProducts";
 
 // Importando os componentes visuais
-import Header from "@/components/Header";
 import SearchBar from "@/components/SearchBar";
 import ProductCard from "@/components/ProductCard";
 
 export default function Home() {
-  // 1. O "Cérebro": Busca dados do Firebase
   const { products, loading } = usePricedProducts();
   const [searchTerm, setSearchTerm] = useState("");
+  const router = useRouter();
 
-  // 2. Lógica de Filtro e Ordenação Alfabética
-  // Primeiro filtramos pelo nome e depois ordenamos de A a Z
   const displayProducts = products
     .filter((p) =>
       p.name.toLowerCase().includes(searchTerm.toLowerCase())
@@ -23,7 +22,6 @@ export default function Home() {
       a.name.localeCompare(b.name, 'pt-BR', { sensitivity: 'base' })
     );
 
-  // Loading simples
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
@@ -36,7 +34,31 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-background">
-      <Header />
+      {/* Header com Logo e Cadeado */}
+      <header className="bg-white border-b border-gray-200 sticky top-0 z-50 shadow-sm">
+        <div className="container mx-auto flex items-center justify-between h-16 px-4">
+          <div className="flex items-center gap-3">
+            <img 
+              src="/icon-192.png" 
+              alt="HB Baterias Logo" 
+              className="h-10 w-10 object-contain rounded-lg shadow-sm" 
+            />
+            <div>
+              <h1 className="text-xl font-bold text-gray-900 leading-tight">HB Baterias</h1>
+              <p className="text-xs text-gray-500">Catálogo Digital</p>
+            </div>
+          </div>
+
+          {/* Botão de Admin (Cadeado) reintroduzido */}
+          <button 
+            onClick={() => router.push("/admin")}
+            className="p-2 text-gray-400 hover:text-gray-600 transition-colors"
+            title="Acesso Administrativo"
+          >
+            <Lock className="h-5 w-5" />
+          </button>
+        </div>
+      </header>
       
       {/* Search Section */}
       <div className="sticky top-16 z-40 bg-background/95 backdrop-blur-sm border-b border-border/50 py-4">
@@ -48,7 +70,7 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Products Grid Ordenado */}
+      {/* Products Grid */}
       <main className="container px-4 py-6 mx-auto">
         {displayProducts.length === 0 ? (
           <div className="text-center py-12">
@@ -64,7 +86,6 @@ export default function Home() {
                 style={{ animationDelay: `${index * 50}ms` }}
                 className="animate-fade-in"
               >
-                {/* O cashPrice aqui já respeitará o manualPixPrice se você atualizou o pricing.ts */}
                 <ProductCard product={product} />
               </div>
             ))}
@@ -72,8 +93,8 @@ export default function Home() {
         )}
         
         {/* Results count */}
-        <p className="text-center text-sm text-muted-foreground mt-6">
-          {displayProducts.length} produto{displayProducts.length !== 1 ? "s" : ""} encontrado{displayProducts.length !== 1 ? "s" : ""}
+        <p className="text-center text-sm text-muted-foreground mt-8 pb-10">
+          Mostrando {displayProducts.length} de {products.length} baterias
         </p>
       </main>
     </div>

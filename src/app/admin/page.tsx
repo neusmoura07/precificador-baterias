@@ -6,7 +6,7 @@ import { getAuth, signOut } from "firebase/auth";
 import { app } from "@/lib/firebase";
 
 // Ícones
-import { Battery, LogOut, Package, Settings, Store } from "lucide-react";
+import { LogOut, Package, Settings, Store } from "lucide-react";
 
 // Hooks e Serviços
 import { useAuth } from "@/context/AuthContext";
@@ -28,7 +28,6 @@ export default function AdminPage() {
   const { products, loading: dataLoading, config } = usePricedProducts();
   const router = useRouter();
 
-  // Proteção de Rota
   useEffect(() => {
     if (!authLoading && !user) {
       router.push("/login");
@@ -41,23 +40,18 @@ export default function AdminPage() {
     router.push("/login");
   };
 
-  // --- LÓGICA DE PRODUTOS ATUALIZADA ---
-  // Dentro do componente AdminPage...
-
-const handleFormSubmit = async (data: any) => {
-  try {
-    if (editingProduct) {
-      await updateProduct(editingProduct.id, data);
-      setEditingProduct(null);
-    } else {
-      // CORREÇÃO: Passando o objeto 'data' completo para o serviço, 
-      // resolvendo o erro de "Expected 1 arguments, but got 2"
-      await createProduct(data);
+  const handleFormSubmit = async (data: any) => {
+    try {
+      if (editingProduct) {
+        await updateProduct(editingProduct.id, data);
+        setEditingProduct(null);
+      } else {
+        await createProduct(data);
+      }
+    } catch (error) {
+      console.error("Erro no formulário:", error);
     }
-  } catch (error) {
-    console.error("Erro no formulário:", error);
-  }
-};
+  };
 
   const handleDeleteProduct = async (id: string) => {
     await deleteProduct(id);
@@ -75,8 +69,6 @@ const handleFormSubmit = async (data: any) => {
     });
   };
 
-  // --- ORDENAÇÃO ALFABÉTICA ---
-  // Ordena os produtos antes de passar para a lista
   const sortedProducts = [...products].sort((a, b) => 
     a.name.localeCompare(b.name, 'pt-BR', { sensitivity: 'base' })
   );
@@ -92,16 +84,20 @@ const handleFormSubmit = async (data: any) => {
   return (
     <div className="min-h-screen bg-gray-50/50 pb-20">
       
-      {/* Header */}
+      {/* Header Admin com Logo */}
       <header className="bg-white border-b border-gray-200 sticky top-0 z-50 shadow-sm">
         <div className="container mx-auto flex items-center justify-between h-16 px-4">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-blue-100 rounded-lg text-blue-600">
-              <Battery className="h-6 w-6" />
+            <div className="p-1 bg-gray-50 rounded-lg">
+              <img 
+                src="/icon-192.png" 
+                alt="HB Baterias Logo" 
+                className="h-8 w-8 object-contain rounded-md" 
+              />
             </div>
             <div>
               <h1 className="text-lg font-bold leading-tight text-gray-900">Painel Admin</h1>
-              <p className="text-xs text-gray-500">Gerenciamento</p>
+              <p className="text-xs text-gray-500">HB Baterias</p>
             </div>
           </div>
           
@@ -125,10 +121,7 @@ const handleFormSubmit = async (data: any) => {
         </div>
       </header>
 
-      {/* Main Content */}
       <main className="container mx-auto px-4 py-8 max-w-5xl">
-        
-        {/* Navegação de Abas */}
         <div className="flex p-1 bg-white rounded-xl border border-gray-200 mb-8 shadow-sm">
           <button
             onClick={() => setActiveTab("products")}
@@ -169,7 +162,7 @@ const handleFormSubmit = async (data: any) => {
                   Produtos Cadastrados
                 </h3>
                 <span className="bg-blue-100 text-blue-700 py-1 px-3 rounded-full text-xs font-bold">
-                  {products.length} itens
+                  {products.length} baterias
                 </span>
               </div>
               
