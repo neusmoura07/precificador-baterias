@@ -76,7 +76,7 @@ const AdminProductList = ({ products, onDelete, onEdit }: AdminProductListProps)
     <div className="space-y-4">
       {/* Barra de Filtros */}
       <div className="flex flex-col md:flex-row gap-3 bg-gray-50 p-3 rounded-xl border border-gray-100">
-        <div className="relative flex-1">
+        <div className="relative flex-1 text-left">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
           <Input 
             placeholder="Buscar por nome..." 
@@ -138,7 +138,7 @@ const AdminProductList = ({ products, onDelete, onEdit }: AdminProductListProps)
                   {/* Miniatura da Imagem */}
                   <div className="h-10 w-10 rounded border bg-gray-50 flex items-center justify-center overflow-hidden flex-shrink-0">
                     {product.imageUrl ? (
-                      <img src={product.imageUrl} className="h-full w-full object-cover" />
+                      <img src={product.imageUrl} alt={product.name} className="h-full w-full object-cover" />
                     ) : (
                       <Package className="h-5 w-5 text-gray-300" />
                     )}
@@ -160,17 +160,22 @@ const AdminProductList = ({ products, onDelete, onEdit }: AdminProductListProps)
                   </div>
                 </div>
 
-                {/* Características Técnicas (Garantia, Tecnologia, CCA) */}
+                {/* Características Técnicas (Manutenção, Tecnologia, Garantia, Specs) */}
                 <div className="flex flex-wrap gap-2 mb-3 ml-[52px]">
+                    <span className="text-[10px] font-bold uppercase px-1.5 py-0.5 bg-amber-50 text-amber-700 rounded border border-amber-100">
+                        {product.maintenance || 'Selada'}
+                    </span>
                     <span className="text-[10px] font-bold uppercase px-1.5 py-0.5 bg-gray-100 text-gray-600 rounded flex items-center gap-1">
-                        <Settings className="h-3 w-3" /> {product.technology || 'Selada'}
+                        <Settings className="h-3 w-3" /> {product.technology}
                     </span>
                     <span className="text-[10px] font-bold uppercase px-1.5 py-0.5 bg-green-100 text-green-700 rounded flex items-center gap-1">
                         <ShieldCheck className="h-3 w-3" /> {product.warranty || '12 meses'}
                     </span>
-                    {(product.cca || product.ca) && (
+                    {(product.cca || product.ca || product.rc) && (
                         <span className="text-[10px] font-bold uppercase px-1.5 py-0.5 bg-blue-50 text-blue-600 rounded">
-                            {product.cca ? `${product.cca}A CCA` : ''} {product.ca ? `| ${product.ca}A C20` : ''}
+                            {product.cca ? `${product.cca}A CCA ` : ''} 
+                            {product.ca ? `| ${product.ca}A C20 ` : ''}
+                            {product.rc ? `| ${product.rc}min RC` : ''}
                         </span>
                     )}
                 </div>

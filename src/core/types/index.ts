@@ -10,6 +10,7 @@ export interface Product {
   technology: string;    // Ex: "Selada", "EFB", "AGM"
   rc?: string;           // Ex: "80min"
   ca?: string;           // Ex: "550"
+  maintenance: string;
   imageUrl?: string;
 }
 

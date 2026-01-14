@@ -17,14 +17,15 @@ export function ProductForm() {
     setMessage(null);
 
     try {
-      // CORREÇÃO: Envie o objeto completo incluindo a propriedade 'active'
+      // CORREÇÃO: Adicionado o campo 'maintenance' obrigatório e atualizado 'technology'
       await createProduct({ 
         name: name.trim(), 
         costPrice: Number(cost),
         warranty: "12 meses", 
-        technology: "Selada",
+        technology: "Chumbo-Ácido", // Removido "Selada" daqui conforme sua solicitação anterior
+        maintenance: "Selada",       // Novo campo obrigatório
         cca: "",
-        active: true // Adicionado para satisfazer o requisito do tipo Omit<Product, "id">
+        active: true 
       });
       
       // Feedback visual e Limpeza

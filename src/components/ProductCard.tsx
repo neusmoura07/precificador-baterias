@@ -1,6 +1,6 @@
 import { PricedProduct } from "@/core/types";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Battery, Zap, CreditCard, ShieldCheck, Activity } from "lucide-react";
+import { Battery, Zap, CreditCard, ShieldCheck, Activity, Cog } from "lucide-react"; // Importado Cog para manutenção
 import { formatCurrency } from "@/lib/utils";
 
 interface ProductCardProps {
@@ -22,14 +22,12 @@ export default function ProductCard({ product }: ProductCardProps) {
 
   return (
     <Card className="group relative overflow-hidden bg-white transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-gray-100 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.1)] text-left">
-      {/* Badge de Economia */}
       {savings > 0 && (
         <div className="absolute top-0 right-0 px-3 py-1 bg-green-500 text-white text-xs font-bold rounded-bl-lg z-10">
           Economize {formatCurrency(savings)} no Pix
         </div>
       )}
 
-      {/* NOVO: Área da Imagem do Produto */}
       <div className="relative h-48 w-full bg-gray-50 flex items-center justify-center overflow-hidden border-b group">
         {product.imageUrl ? (
           <img 
@@ -49,9 +47,14 @@ export default function ProductCard({ product }: ProductCardProps) {
           <CardTitle className="text-lg font-bold text-gray-900 leading-tight">
             {product.name}
           </CardTitle>
-          <div>
+          <div className="flex flex-wrap gap-2">
+            {/* Tecnologia */}
             <span className={`inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold uppercase text-white shadow-sm transition-colors ${getTechBadgeColor(product.technology)}`}>
-              {product.technology || 'Selada'}
+              {product.technology}
+            </span>
+            {/* NOVO: Manutenção */}
+            <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-gray-100 text-gray-600 border border-gray-200">
+              {product.maintenance || 'Selada'}
             </span>
           </div>
         </div>
@@ -71,9 +74,10 @@ export default function ProductCard({ product }: ProductCardProps) {
             <ShieldCheck className="h-3.5 w-3.5 text-green-500" /> 
             <span>Garantia: <strong className="text-gray-900">{product.warranty || '12m'}</strong></span>
           </div>
+          {/* RC (Reserva de Capacidade) */}
           <div className="flex items-center gap-2 text-[11px] text-gray-600 bg-gray-50 p-2 rounded-lg border border-gray-100">
              <Activity className="h-3.5 w-3.5 text-amber-500" /> 
-             <span>Reserva de Capacidade (RC): <strong className="text-gray-900">{product.rc ? `${product.rc} min` : '--'}</strong></span>
+             <span>RC: <strong className="text-gray-900">{product.rc ? `${product.rc} min` : '--'}</strong></span>
           </div>
         </div>
 

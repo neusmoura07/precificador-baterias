@@ -21,15 +21,17 @@ const AdminProductForm = ({ onSubmit, productToEdit, onCancelEdit }: AdminProduc
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string>("");
 
+  // Estados dos Campos
   const [name, setName] = useState("");
   const [costPrice, setCostPrice] = useState("");
   const [manualPrice, setManualPrice] = useState("");
   const [manualPixPrice, setManualPixPrice] = useState("");
   const [warranty, setWarranty] = useState("12 meses");
   const [cca, setCca] = useState("");
-  const [technology, setTechnology] = useState("Selada");
+  const [technology, setTechnology] = useState("Chumbo-Ácido");
   const [rc, setRc] = useState("");
   const [ca, setCa] = useState("");
+  const [maintenance, setMaintenance] = useState("Selada");
   
   const { config } = usePricedProducts();
 
@@ -41,13 +43,15 @@ const AdminProductForm = ({ onSubmit, productToEdit, onCancelEdit }: AdminProduc
       setManualPixPrice(productToEdit.manualPixPrice?.toString() || "");
       setWarranty(productToEdit.warranty || "12 meses");
       setCca(productToEdit.cca || "");
-      setTechnology(productToEdit.technology || "Selada");
+      setTechnology(productToEdit.technology || "Chumbo-Ácido");
       setRc(productToEdit.rc || "");
       setCa(productToEdit.ca || "");
+      setMaintenance(productToEdit.maintenance || "Selada");
       setPreviewUrl(productToEdit.imageUrl || "");
     } else {
       setName(""); setCostPrice(""); setManualPrice(""); setManualPixPrice("");
-      setWarranty("12 meses"); setCca(""); setTechnology("Selada"); setRc(""); setCa("");
+      setWarranty("12 meses"); setCca(""); setTechnology("Chumbo-Ácido"); 
+      setRc(""); setCa(""); setMaintenance("Selada");
       setPreviewUrl(""); setImageFile(null);
     }
   }, [productToEdit]);
@@ -72,7 +76,6 @@ const AdminProductForm = ({ onSubmit, productToEdit, onCancelEdit }: AdminProduc
       try {
         let finalImageUrl = previewUrl;
 
-        // Se houver um novo arquivo selecionado, faz o upload para o ImgBB primeiro
         if (imageFile) {
           finalImageUrl = await uploadProductImage(imageFile);
         }
@@ -87,7 +90,8 @@ const AdminProductForm = ({ onSubmit, productToEdit, onCancelEdit }: AdminProduc
           technology, 
           rc, 
           ca,
-          imageUrl: finalImageUrl // Salva a URL da imagem no Firestore
+          maintenance,
+          imageUrl: finalImageUrl
         });
         
         setSaveSuccess(true);
@@ -164,7 +168,7 @@ const AdminProductForm = ({ onSubmit, productToEdit, onCancelEdit }: AdminProduc
       <div className="grid gap-4 md:grid-cols-2">
         <div className="p-4 bg-blue-50/50 rounded-lg border border-blue-100 space-y-3">
           <div className="flex items-center justify-between">
-            <Label htmlFor="manual-price" className="flex items-center gap-2 text-blue-900 font-bold text-xs uppercase">
+            <Label htmlFor="manual-price" className="flex items-center gap-2 text-blue-900 font-bold text-xs uppercase text-left">
               <Calculator className="h-4 w-4" /> Venda Final (Cartão)
             </Label>
             {simulatedCardPrice > 0 && (
@@ -178,7 +182,7 @@ const AdminProductForm = ({ onSubmit, productToEdit, onCancelEdit }: AdminProduc
 
         <div className="p-4 bg-green-50/50 rounded-lg border border-green-100 space-y-3">
           <div className="flex items-center justify-between">
-            <Label htmlFor="manual-pix" className="flex items-center gap-2 text-green-900 font-bold text-xs uppercase">
+            <Label htmlFor="manual-pix" className="flex items-center gap-2 text-green-900 font-bold text-xs uppercase text-left">
               <Zap className="h-4 w-4" /> Venda Final (Pix)
             </Label>
             {simulatedPixPrice > 0 && (
@@ -192,23 +196,31 @@ const AdminProductForm = ({ onSubmit, productToEdit, onCancelEdit }: AdminProduc
       </div>
 
       <div className="p-5 bg-gray-50/50 rounded-xl border border-gray-200 space-y-4">
-        <h4 className="font-bold text-gray-700 text-xs flex items-center gap-2 uppercase tracking-wider">
+        <h4 className="font-bold text-gray-700 text-xs flex items-center gap-2 uppercase tracking-wider text-left">
           <Settings className="h-4 w-4 text-gray-500" /> Características Técnicas
         </h4>
         
         <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-          <div className="space-y-1.5">
+          <div className="space-y-1.5 text-left">
+            <Label className="text-xs">Manutenção</Label>
+            <select value={maintenance} onChange={(e) => setMaintenance(e.target.value)} className="w-full h-10 px-3 rounded-md border border-input bg-background text-sm outline-none focus:ring-2 focus:ring-primary">
+              <option value="Selada">Selada</option>
+              <option value="Com manutenção">Com manutenção</option>
+              <option value="Baixa manutenção">Baixa manutenção</option>
+            </select>
+          </div>
+
+          <div className="space-y-1.5 text-left">
             <Label className="text-xs">Tecnologia</Label>
             <select value={technology} onChange={(e) => setTechnology(e.target.value)} className="w-full h-10 px-3 rounded-md border border-input bg-background text-sm outline-none focus:ring-2 focus:ring-primary">
-              <option value="Selada">Selada</option>
+              <option value="Chumbo-Ácido">Chumbo-Ácido</option>
               <option value="EFB">EFB</option>
               <option value="AGM">AGM</option>
-              <option value="Chumbo-Ácido">Chumbo-Ácido</option>
               <option value="Estacionária">Estacionária</option>
             </select>
           </div>
 
-          <div className="space-y-1.5">
+          <div className="space-y-1.5 text-left">
             <Label className="text-xs">Garantia</Label>
             <select value={warranty} onChange={(e) => setWarranty(e.target.value)} className="w-full h-10 px-3 rounded-md border border-input bg-background text-sm outline-none focus:ring-2 focus:ring-primary">
               <option value="12 meses">12 meses</option>
@@ -218,19 +230,19 @@ const AdminProductForm = ({ onSubmit, productToEdit, onCancelEdit }: AdminProduc
             </select>
           </div>
 
-          <div className="space-y-1.5">
+          <div className="space-y-1.5 text-left">
             <Label className="text-xs">CCA (A)</Label>
             <Input value={cca} onChange={(e) => setCca(e.target.value)} placeholder="Ex: 480" className="h-10" />
           </div>
 
-          <div className="space-y-1.5">
-            <Label className="text-xs">C20 (A)</Label>
+          <div className="space-y-1.5 text-left">
+            <Label className="text-xs">CA (A)</Label>
             <Input value={ca} onChange={(e) => setCa(e.target.value)} placeholder="Ex: 550" className="h-10" />
           </div>
 
-          <div className="space-y-1.5">
+          <div className="space-y-1.5 text-left">
             <Label className="text-xs">RC (min)</Label>
-            <Input value={rc} onChange={(e) => setRc(e.target.value)} placeholder="Ex: 80" className="h-10" />
+            <Input value={rc} onChange={(e) => setRc(e.target.value)} placeholder="Ex: 90" className="h-10" />
           </div>
         </div>
       </div>
