@@ -236,7 +236,7 @@ const AdminProductForm = ({ onSubmit, productToEdit, onCancelEdit }: AdminProduc
           </div>
 
           <div className="space-y-1.5 text-left">
-            <Label className="text-xs">CA (A)</Label>
+            <Label className="text-xs">C20 (A)</Label>
             <Input value={ca} onChange={(e) => setCa(e.target.value)} placeholder="Ex: 550" className="h-10" />
           </div>
 
