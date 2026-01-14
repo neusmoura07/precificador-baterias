@@ -73,7 +73,7 @@ export default function ProductCard({ product }: ProductCardProps) {
           </div>
           <div className="flex items-center gap-2 text-[11px] text-gray-600 bg-gray-50 p-2 rounded-lg border border-gray-100">
              <Activity className="h-3.5 w-3.5 text-amber-500" /> 
-             <span>RA: <strong className="text-gray-900">{product.ri ? `${product.ri} mΩ` : '--'}</strong></span>
+             <span>Reserva de Capacidade (RC): <strong className="text-gray-900">{product.rc ? `${product.rc} min` : '--'}</strong></span>
           </div>
         </div>
 

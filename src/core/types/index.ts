@@ -8,7 +8,7 @@ export interface Product {
   warranty: string;      // Ex: "12 meses"
   cca: string;           // Ex: "450"
   technology: string;    // Ex: "Selada", "EFB", "AGM"
-  ri?: string;           // Ex: "5.2"
+  rc?: string;           // Ex: "80min"
   ca?: string;           // Ex: "550"
   imageUrl?: string;
 }

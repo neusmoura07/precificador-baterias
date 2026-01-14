@@ -28,7 +28,7 @@ const AdminProductForm = ({ onSubmit, productToEdit, onCancelEdit }: AdminProduc
   const [warranty, setWarranty] = useState("12 meses");
   const [cca, setCca] = useState("");
   const [technology, setTechnology] = useState("Selada");
-  const [ri, setRi] = useState("");
+  const [rc, setRc] = useState("");
   const [ca, setCa] = useState("");
   
   const { config } = usePricedProducts();
@@ -42,12 +42,12 @@ const AdminProductForm = ({ onSubmit, productToEdit, onCancelEdit }: AdminProduc
       setWarranty(productToEdit.warranty || "12 meses");
       setCca(productToEdit.cca || "");
       setTechnology(productToEdit.technology || "Selada");
-      setRi(productToEdit.ri || "");
+      setRc(productToEdit.rc || "");
       setCa(productToEdit.ca || "");
       setPreviewUrl(productToEdit.imageUrl || "");
     } else {
       setName(""); setCostPrice(""); setManualPrice(""); setManualPixPrice("");
-      setWarranty("12 meses"); setCca(""); setTechnology("Selada"); setRi(""); setCa("");
+      setWarranty("12 meses"); setCca(""); setTechnology("Selada"); setRc(""); setCa("");
       setPreviewUrl(""); setImageFile(null);
     }
   }, [productToEdit]);
@@ -85,7 +85,7 @@ const AdminProductForm = ({ onSubmit, productToEdit, onCancelEdit }: AdminProduc
           warranty, 
           cca, 
           technology, 
-          ri, 
+          rc, 
           ca,
           imageUrl: finalImageUrl // Salva a URL da imagem no Firestore
         });
@@ -95,7 +95,7 @@ const AdminProductForm = ({ onSubmit, productToEdit, onCancelEdit }: AdminProduc
 
         if (!productToEdit) {
           setName(""); setCostPrice(""); setManualPrice(""); setManualPixPrice("");
-          setCca(""); setRi(""); setCa(""); setPreviewUrl(""); setImageFile(null);
+          setCca(""); setRc(""); setCa(""); setPreviewUrl(""); setImageFile(null);
         }
       } catch (error) {
         console.error("Erro ao salvar:", error);
@@ -229,8 +229,8 @@ const AdminProductForm = ({ onSubmit, productToEdit, onCancelEdit }: AdminProduc
           </div>
 
           <div className="space-y-1.5">
-            <Label className="text-xs">RA (mΩ)</Label>
-            <Input value={ri} onChange={(e) => setRi(e.target.value)} placeholder="Ex: 4.8" className="h-10" />
+            <Label className="text-xs">RC (min)</Label>
+            <Input value={rc} onChange={(e) => setRc(e.target.value)} placeholder="Ex: 80" className="h-10" />
           </div>
         </div>
       </div>
