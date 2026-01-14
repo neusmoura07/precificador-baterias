@@ -65,7 +65,7 @@ export default function ProductCard({ product }: ProductCardProps) {
           </div>
           <div className="flex items-center gap-2 text-[11px] text-gray-600 bg-gray-50 p-2 rounded-lg border border-gray-100">
             <Activity className="h-3.5 w-3.5 text-orange-500" /> 
-            <span>CA: <strong className="text-gray-900">{product.ca || '--'}A</strong></span>
+            <span>C20: <strong className="text-gray-900">{product.ca || '--'}A</strong></span>
           </div>
           <div className="flex items-center gap-2 text-[11px] text-gray-600 bg-gray-50 p-2 rounded-lg border border-gray-100">
             <ShieldCheck className="h-3.5 w-3.5 text-green-500" /> 
@@ -73,7 +73,7 @@ export default function ProductCard({ product }: ProductCardProps) {
           </div>
           <div className="flex items-center gap-2 text-[11px] text-gray-600 bg-gray-50 p-2 rounded-lg border border-gray-100">
              <Activity className="h-3.5 w-3.5 text-amber-500" /> 
-             <span>RI: <strong className="text-gray-900">{product.ri ? `${product.ri} mΩ` : '--'}</strong></span>
+             <span>RA: <strong className="text-gray-900">{product.ri ? `${product.ri} mΩ` : '--'}</strong></span>
           </div>
         </div>
 

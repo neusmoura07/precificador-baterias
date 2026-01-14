@@ -170,7 +170,7 @@ const AdminProductList = ({ products, onDelete, onEdit }: AdminProductListProps)
                     </span>
                     {(product.cca || product.ca) && (
                         <span className="text-[10px] font-bold uppercase px-1.5 py-0.5 bg-blue-50 text-blue-600 rounded">
-                            {product.cca ? `${product.cca}A CCA` : ''} {product.ca ? `| ${product.ca}A CA` : ''}
+                            {product.cca ? `${product.cca}A CCA` : ''} {product.ca ? `| ${product.ca}A C20` : ''}
                         </span>
                     )}
                 </div>

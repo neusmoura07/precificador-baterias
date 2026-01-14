@@ -224,12 +224,12 @@ const AdminProductForm = ({ onSubmit, productToEdit, onCancelEdit }: AdminProduc
           </div>
 
           <div className="space-y-1.5">
-            <Label className="text-xs">CA (A)</Label>
+            <Label className="text-xs">C20 (A)</Label>
             <Input value={ca} onChange={(e) => setCa(e.target.value)} placeholder="Ex: 550" className="h-10" />
           </div>
 
           <div className="space-y-1.5">
-            <Label className="text-xs">RI (mΩ)</Label>
+            <Label className="text-xs">RA (mΩ)</Label>
             <Input value={ri} onChange={(e) => setRi(e.target.value)} placeholder="Ex: 4.8" className="h-10" />
           </div>
         </div>
