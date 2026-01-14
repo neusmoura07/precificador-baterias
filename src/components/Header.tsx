@@ -16,7 +16,7 @@ export default function Header() {
           </div>
           <div>
             <h1 className="text-lg font-bold text-gray-900 leading-none">
-              Cia das Baterias
+              HB Baterias
             </h1>
             <p className="text-xs text-gray-500 font-medium">
               Catálogo Digital
