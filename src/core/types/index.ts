@@ -3,6 +3,8 @@ export interface Product {
   name: string;
   costPrice: number;
   active: boolean;
+  manualPrice?: number;
+  manualPixPrice?: number;
 }
 
 export interface PricingConfig {
@@ -14,4 +16,5 @@ export interface PricingConfig {
 export interface PricedProduct extends Product {
   cardPrice: number;
   cashPrice: number;
+  autoCalculatedPrice: number; // Preço calculado automaticamente, sem considerar manualPrice
 }

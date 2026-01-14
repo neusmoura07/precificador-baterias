@@ -3,23 +3,27 @@
 import { useState } from "react";
 import { usePricedProducts } from "@/hooks/usePricedProducts";
 
-// Importando os componentes visuais que você trouxe do Lovable
-// Certifique-se de que eles estão na pasta src/components/
-import  Header  from "@/components/Header";
-import  SearchBar  from "@/components/SearchBar";
-import  ProductCard  from "@/components/ProductCard";
+// Importando os componentes visuais
+import Header from "@/components/Header";
+import SearchBar from "@/components/SearchBar";
+import ProductCard from "@/components/ProductCard";
 
 export default function Home() {
-  // 1. O "Cérebro": Nossa lógica que busca dados do Firebase
+  // 1. O "Cérebro": Busca dados do Firebase
   const { products, loading } = usePricedProducts();
   const [searchTerm, setSearchTerm] = useState("");
 
-  // 2. A Lógica de Filtro: Aplica a busca sobre a lista do Firebase
-  const filteredProducts = products.filter((p) =>
-    p.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  // 2. Lógica de Filtro e Ordenação Alfabética
+  // Primeiro filtramos pelo nome e depois ordenamos de A a Z
+  const displayProducts = products
+    .filter((p) =>
+      p.name.toLowerCase().includes(searchTerm.toLowerCase())
+    )
+    .sort((a, b) => 
+      a.name.localeCompare(b.name, 'pt-BR', { sensitivity: 'base' })
+    );
 
-  // Loading simples para não mostrar tela em branco
+  // Loading simples
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
@@ -30,25 +34,23 @@ export default function Home() {
     );
   }
 
-  // 3. O Visual (Lovable): O código que você me enviou
   return (
     <div className="min-h-screen bg-background">
       <Header />
       
       {/* Search Section */}
       <div className="sticky top-16 z-40 bg-background/95 backdrop-blur-sm border-b border-border/50 py-4">
-        <div className="container px-4 mx-auto"> {/* Adicionei mx-auto para centralizar */}
+        <div className="container px-4 mx-auto">
           <SearchBar
             value={searchTerm}
             onChange={setSearchTerm}
-            // O componente do Lovable pode esperar props diferentes, mas geralmente é value/onChange
           />
         </div>
       </div>
 
-      {/* Products Grid */}
-      <main className="container px-4 py-6 mx-auto"> {/* Adicionei mx-auto */}
-        {filteredProducts.length === 0 ? (
+      {/* Products Grid Ordenado */}
+      <main className="container px-4 py-6 mx-auto">
+        {displayProducts.length === 0 ? (
           <div className="text-center py-12">
             <p className="text-muted-foreground text-lg">
               Nenhum produto encontrado para "{searchTerm}"
@@ -56,13 +58,13 @@ export default function Home() {
           </div>
         ) : (
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {filteredProducts.map((product, index) => (
+            {displayProducts.map((product, index) => (
               <div
                 key={product.id}
                 style={{ animationDelay: `${index * 50}ms` }}
-                className="animate-fade-in" // Classe de animação comum nessas IAs
+                className="animate-fade-in"
               >
-                {/* Aqui passamos o produto REAL (com preço Pix e Cartão) para o card visual */}
+                {/* O cashPrice aqui já respeitará o manualPixPrice se você atualizou o pricing.ts */}
                 <ProductCard product={product} />
               </div>
             ))}
@@ -71,7 +73,7 @@ export default function Home() {
         
         {/* Results count */}
         <p className="text-center text-sm text-muted-foreground mt-6">
-          {filteredProducts.length} produto{filteredProducts.length !== 1 ? "s" : ""} encontrado{filteredProducts.length !== 1 ? "s" : ""}
+          {displayProducts.length} produto{displayProducts.length !== 1 ? "s" : ""} encontrado{displayProducts.length !== 1 ? "s" : ""}
         </p>
       </main>
     </div>

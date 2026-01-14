@@ -4,17 +4,26 @@ export const calculateProductPrice = (
   product: Product, 
   config: PricingConfig
 ): PricedProduct => {
-  // Regra 1: Preço Base (Cartão) = Custo / Markup
-  // Evitar divisão por zero
   const divisor = config.markupDivisor === 0 ? 1 : config.markupDivisor;
-  const basePrice = product.costPrice / divisor;
+  
+  // Cálculo automático original do cartão
+  const calculatedBasePrice = product.costPrice / divisor;
+  
+  // Regra do Cartão: Manual > Automático
+  const finalCardPrice = product.manualPrice && product.manualPrice > 0 
+    ? product.manualPrice 
+    : calculatedBasePrice;
 
-  // Regra 2: Preço à Vista = Base * (1 - Desconto)
-  const cashPrice = basePrice * (1 - config.cashDiscount);
+  // --- NOVA REGRA DO PIX ---
+  // Prioridade: 1. Pix Manual | 2. Desconto automático sobre o preço de cartão final
+  const finalPixPrice = product.manualPixPrice && product.manualPixPrice > 0
+    ? product.manualPixPrice
+    : finalCardPrice * (1 - config.cashDiscount);
 
   return {
     ...product,
-    cardPrice: Number(basePrice.toFixed(2)), // Arredondamento seguro para UI
-    cashPrice: Number(cashPrice.toFixed(2))
+    cardPrice: Number(finalCardPrice.toFixed(2)),
+    cashPrice: Number(finalPixPrice.toFixed(2)), // Agora retorna o manual se existir
+    autoCalculatedPrice: Number(calculatedBasePrice.toFixed(2)) 
   };
 };

@@ -1,6 +1,5 @@
 import { PricedProduct } from "@/core/types";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Battery, Zap, CreditCard } from "lucide-react";
 import { formatCurrency } from "@/lib/utils";
 
@@ -8,16 +7,18 @@ interface ProductCardProps {
   product: PricedProduct;
 }
 
-// CORREÇÃO: Adicionei 'default' aqui para funcionar com seu page.tsx
 export default function ProductCard({ product }: ProductCardProps) {
+  // A economia agora é baseada nos valores finais que já passaram pela lógica de prioridade
   const savings = product.cardPrice - product.cashPrice;
 
   return (
     <Card className="group relative overflow-hidden bg-white transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-gray-100 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.1)]">
       {/* Badge de Economia */}
-      <div className="absolute top-0 right-0 px-3 py-1 bg-green-500 text-white text-xs font-bold rounded-bl-lg z-10">
-        Economize {formatCurrency(savings)} no Pix
-      </div>
+      {savings > 0 && (
+        <div className="absolute top-0 right-0 px-3 py-1 bg-green-500 text-white text-xs font-bold rounded-bl-lg z-10">
+          Economize {formatCurrency(savings)} no Pix
+        </div>
+      )}
 
       <CardHeader className="pb-2 pt-6 relative z-0">
         <div className="flex items-start justify-between">
@@ -43,15 +44,11 @@ export default function ProductCard({ product }: ProductCardProps) {
               <Zap className="h-12 w-12 text-green-600" fill="currentColor" />
             </div>
             <p className="text-sm text-green-700 font-medium flex items-center gap-1.5 mb-1">
-              <Zap className="h-4 w-4" fill="currentColor" />À vista no
-              Pix/Dinheiro
+              <Zap className="h-4 w-4" fill="currentColor" />À vista no Pix/Dinheiro
             </p>
             <div className="flex items-end gap-1">
-              <span className="text-xs text-green-600 font-semibold mb-1.5">
-                R$
-              </span>
               <span className="text-3xl font-extrabold text-green-700 tracking-tight leading-none">
-                {product.cashPrice.toFixed(2).replace(".", ",")}
+                {formatCurrency(product.cashPrice)}
               </span>
             </div>
           </div>

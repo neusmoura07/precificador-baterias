@@ -11,8 +11,9 @@ import { Battery, LogOut, Package, Settings, Store } from "lucide-react";
 // Hooks e Serviços
 import { useAuth } from "@/context/AuthContext";
 import { usePricedProducts } from "@/hooks/usePricedProducts";
-import { createProduct, deleteProduct } from "@/services/productService";
+import { createProduct, deleteProduct, updateProduct } from "@/services/productService";
 import { updateGlobalRates } from "@/services/settingsService";
+import { Product } from "@/core/types";
 
 // Componentes Visuais
 import AdminProductForm from "@/components/AdminProductForm"; 
@@ -21,6 +22,8 @@ import PricingSettings from "@/components/PricingSettings";
 
 export default function AdminPage() {
   const [activeTab, setActiveTab] = useState<"products" | "settings">("products");
+  const [editingProduct, setEditingProduct] = useState<Product | null>(null);
+  
   const { user, loading: authLoading } = useAuth();
   const { products, loading: dataLoading, config } = usePricedProducts();
   const router = useRouter();
@@ -38,16 +41,24 @@ export default function AdminPage() {
     router.push("/login");
   };
 
-  // --- CORREÇÃO 1: Ajuste para bater com o componente do Lovable ---
-  // O componente visual espera receber (nome, preco) separados, não um objeto.
-  const handleAddProduct = async (name: string, costPrice: number) => {
-    await createProduct(name, costPrice);
+  // --- LÓGICA DE PRODUTOS ATUALIZADA ---
+  const handleFormSubmit = async (data: { name: string; costPrice: number; manualPrice?: number; manualPixPrice?: number }) => {
+    if (editingProduct) {
+      await updateProduct(editingProduct.id, data);
+      setEditingProduct(null);
+    } else {
+      // CORREÇÃO: Enviando também o manualPixPrice na criação de novos produtos
+      await createProduct(data.name, data.costPrice, data.manualPrice, data.manualPixPrice);
+    }
   };
 
   const handleDeleteProduct = async (id: string) => {
-    if (confirm("Tem certeza que deseja apagar este produto?")) {
-      await deleteProduct(id);
-    }
+    await deleteProduct(id);
+  };
+
+  const handleEditClick = (product: Product) => {
+    setEditingProduct(product);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handleSaveConfig = async (newConfig: any) => {
@@ -56,6 +67,12 @@ export default function AdminPage() {
       cashDiscount: Number(newConfig.cashDiscount)
     });
   };
+
+  // --- ORDENAÇÃO ALFABÉTICA ---
+  // Ordena os produtos antes de passar para a lista
+  const sortedProducts = [...products].sort((a, b) => 
+    a.name.localeCompare(b.name, 'pt-BR', { sensitivity: 'base' })
+  );
 
   if (authLoading || !user) {
     return (
@@ -82,13 +99,13 @@ export default function AdminPage() {
           </div>
           
           <div className="flex items-center gap-2">
-            <a 
-              href="/" 
+            <button
+              onClick={() => router.push("/")}
               className="flex items-center px-3 py-2 text-sm font-medium text-gray-600 hover:bg-gray-100 rounded-md transition-colors"
             >
               <Store className="h-4 w-4 mr-2" />
               Ver Loja
-            </a>
+            </button>
             
             <button
               onClick={handleLogout}
@@ -132,7 +149,11 @@ export default function AdminPage() {
 
         {activeTab === "products" && (
           <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-            <AdminProductForm onSubmit={handleAddProduct} />
+            <AdminProductForm 
+              onSubmit={handleFormSubmit} 
+              productToEdit={editingProduct}
+              onCancelEdit={() => setEditingProduct(null)}
+            />
             
             <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
               <div className="p-6 border-b border-gray-100 flex items-center justify-between">
@@ -146,8 +167,9 @@ export default function AdminPage() {
               </div>
               
               <AdminProductList 
-                products={products} 
+                products={sortedProducts} 
                 onDelete={handleDeleteProduct} 
+                onEdit={handleEditClick}
               />
             </div>
           </div>
@@ -161,8 +183,6 @@ export default function AdminPage() {
                 Configurações de Preços
               </h3>
               
-              {/* --- CORREÇÃO 2: Fallback para Config --- */}
-              {/* Se 'config' for null (carregando), passamos um objeto padrão para o TypeScript não reclamar */}
               <PricingSettings 
                 config={config || { markupDivisor: 0, cashDiscount: 0 }} 
                 onSave={handleSaveConfig} 
