@@ -1,10 +1,11 @@
 import { useState, useEffect } from "react";
-import { Plus, Save, X, Calculator, Zap, Settings, CheckCircle2, Loader2 } from "lucide-react"; 
+import { Plus, Save, X, Calculator, Zap, Settings, CheckCircle2, Loader2, ImagePlus } from "lucide-react"; 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Product } from "@/core/types";
 import { usePricedProducts } from "@/hooks/usePricedProducts";
+import { uploadProductImage } from "@/services/productService";
 
 interface AdminProductFormProps {
   onSubmit: (data: any) => Promise<void> | void;
@@ -15,6 +16,10 @@ interface AdminProductFormProps {
 const AdminProductForm = ({ onSubmit, productToEdit, onCancelEdit }: AdminProductFormProps) => {
   const [isSaving, setIsSaving] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
+
+  // Estados de Imagem
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string>("");
 
   const [name, setName] = useState("");
   const [costPrice, setCostPrice] = useState("");
@@ -39,9 +44,11 @@ const AdminProductForm = ({ onSubmit, productToEdit, onCancelEdit }: AdminProduc
       setTechnology(productToEdit.technology || "Selada");
       setRi(productToEdit.ri || "");
       setCa(productToEdit.ca || "");
+      setPreviewUrl(productToEdit.imageUrl || "");
     } else {
       setName(""); setCostPrice(""); setManualPrice(""); setManualPixPrice("");
       setWarranty("12 meses"); setCca(""); setTechnology("Selada"); setRi(""); setCa("");
+      setPreviewUrl(""); setImageFile(null);
     }
   }, [productToEdit]);
 
@@ -63,7 +70,13 @@ const AdminProductForm = ({ onSubmit, productToEdit, onCancelEdit }: AdminProduc
     if (name.trim() && costPrice) {
       setIsSaving(true);
       try {
-        // CORREÇÃO: Enviando o objeto único esperado pela função createProduct no serviço
+        let finalImageUrl = previewUrl;
+
+        // Se houver um novo arquivo selecionado, faz o upload para o ImgBB primeiro
+        if (imageFile) {
+          finalImageUrl = await uploadProductImage(imageFile);
+        }
+
         await onSubmit({
           name: name.trim(),
           costPrice: parseFloat(costPrice),
@@ -73,7 +86,8 @@ const AdminProductForm = ({ onSubmit, productToEdit, onCancelEdit }: AdminProduc
           cca, 
           technology, 
           ri, 
-          ca
+          ca,
+          imageUrl: finalImageUrl // Salva a URL da imagem no Firestore
         });
         
         setSaveSuccess(true);
@@ -81,7 +95,7 @@ const AdminProductForm = ({ onSubmit, productToEdit, onCancelEdit }: AdminProduc
 
         if (!productToEdit) {
           setName(""); setCostPrice(""); setManualPrice(""); setManualPixPrice("");
-          setCca(""); setRi(""); setCa("");
+          setCca(""); setRi(""); setCa(""); setPreviewUrl(""); setImageFile(null);
         }
       } catch (error) {
         console.error("Erro ao salvar:", error);
@@ -103,6 +117,37 @@ const AdminProductForm = ({ onSubmit, productToEdit, onCancelEdit }: AdminProduc
             <X className="h-4 w-4 mr-1" /> Cancelar
           </Button>
         )}
+      </div>
+
+      {/* SEÇÃO DE IMAGEM */}
+      <div className="p-4 bg-gray-50 rounded-lg border border-dashed border-gray-300 space-y-3">
+        <Label className="text-xs font-bold uppercase flex items-center gap-2">
+          <ImagePlus className="h-4 w-4" /> Foto do Produto
+        </Label>
+        <div className="flex items-center gap-4">
+          <div className="h-20 w-20 rounded-lg border bg-white flex items-center justify-center overflow-hidden">
+            {previewUrl ? (
+              <img src={previewUrl} alt="Preview" className="h-full w-full object-cover" />
+            ) : (
+              <ImagePlus className="h-8 w-8 text-gray-300" />
+            )}
+          </div>
+          <div className="flex-1">
+            <Input 
+              type="file" 
+              accept="image/*" 
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                if (file) {
+                  setImageFile(file);
+                  setPreviewUrl(URL.createObjectURL(file));
+                }
+              }} 
+              className="h-10 text-xs cursor-pointer"
+            />
+            <p className="text-[10px] text-gray-500 mt-1">PNG, JPG ou WEBP. Máx 32MB.</p>
+          </div>
+        </div>
       </div>
       
       <div className="grid gap-4 sm:grid-cols-2">

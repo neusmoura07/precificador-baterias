@@ -5,13 +5,39 @@ import {
   addDoc,
   query,
   orderBy,
-  deleteDoc, 
+  deleteDoc,
   doc,
   updateDoc,
 } from "firebase/firestore";
 import { Product } from "@/core/types";
 
 const COLLECTION = "products";
+
+// --- FUNÇÃO DE UPLOAD EXTERNA (ImgBB) ---
+export const uploadProductImage = async (file: File): Promise<string> => {
+  // SUBSTITUA PELA SUA CHAVE DO IMGBB: https://api.imgbb.com/
+  const API_KEY = "535f874f0c000d4909841f5244dc6142"; 
+  const formData = new FormData();
+  formData.append("image", file);
+
+  try {
+    const response = await fetch(`https://api.imgbb.com/1/upload?key=${API_KEY}`, {
+      method: "POST",
+      body: formData,
+    });
+
+    const data = await response.json();
+    
+    if (data.success) {
+      return data.data.url; // Retorna o link direto da imagem
+    } else {
+      throw new Error("Falha no upload da imagem para o ImgBB");
+    }
+  } catch (error) {
+    console.error("Erro no upload:", error);
+    throw error;
+  }
+};
 
 export const getProducts = async (): Promise<Product[]> => {
   const q = query(collection(db, COLLECTION), orderBy("name"));
@@ -26,7 +52,6 @@ export const getProducts = async (): Promise<Product[]> => {
   );
 };
 
-// Modificado para aceitar o objeto completo de características
 export const createProduct = async (productData: Omit<Product, 'id'>) => {
   try {
     await addDoc(collection(db, COLLECTION), {
@@ -44,7 +69,6 @@ export const createProduct = async (productData: Omit<Product, 'id'>) => {
   }
 };
 
-// Modificado para aceitar o objeto completo na atualização
 export const updateProduct = async (id: string, data: Partial<Product>) => {
   try {
     const productRef = doc(db, COLLECTION, id);

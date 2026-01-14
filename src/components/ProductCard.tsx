@@ -10,19 +10,18 @@ interface ProductCardProps {
 export default function ProductCard({ product }: ProductCardProps) {
   const savings = product.cardPrice - product.cashPrice;
 
-  // Função para definir a cor baseada na tecnologia
   const getTechBadgeColor = (tech: string) => {
     switch (tech) {
       case "EFB": return "bg-orange-600";
       case "AGM": return "bg-purple-600";
       case "Chumbo-Ácido": return "bg-slate-700";
       case "Estacionária": return "bg-teal-600";
-      default: return "bg-blue-600"; // Padrão para Selada
+      default: return "bg-blue-600";
     }
   };
 
   return (
-    <Card className="group relative overflow-hidden bg-white transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-gray-100 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.1)]">
+    <Card className="group relative overflow-hidden bg-white transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-gray-100 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.1)] text-left">
       {/* Badge de Economia */}
       {savings > 0 && (
         <div className="absolute top-0 right-0 px-3 py-1 bg-green-500 text-white text-xs font-bold rounded-bl-lg z-10">
@@ -30,29 +29,36 @@ export default function ProductCard({ product }: ProductCardProps) {
         </div>
       )}
 
-      <CardHeader className="pb-2 pt-6 relative z-0">
-        <div className="flex items-start justify-between">
-          <div className="flex gap-3 items-center">
-            <div className="p-2.5 bg-blue-50 text-blue-600 rounded-xl group-hover:bg-blue-100 transition-colors">
-              <Battery className="h-6 w-6" />
-            </div>
-            <div className="flex flex-col gap-1 text-left">
-              <CardTitle className="text-lg font-bold text-gray-900 leading-tight">
-                {product.name}
-              </CardTitle>
-              {/* Selo com Cor Dinâmica */}
-              <div>
-                <span className={`inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold uppercase text-white shadow-sm transition-colors ${getTechBadgeColor(product.technology)}`}>
-                  {product.technology || 'Selada'}
-                </span>
-              </div>
-            </div>
+      {/* NOVO: Área da Imagem do Produto */}
+      <div className="relative h-48 w-full bg-gray-50 flex items-center justify-center overflow-hidden border-b group">
+        {product.imageUrl ? (
+          <img 
+            src={product.imageUrl} 
+            alt={product.name} 
+            className="h-full w-full object-contain p-4 transition-transform duration-500 group-hover:scale-110" 
+          />
+        ) : (
+          <div className="p-6 bg-blue-50 text-blue-600 rounded-2xl">
+            <Battery className="h-12 w-12" />
+          </div>
+        )}
+      </div>
+
+      <CardHeader className="pb-2 pt-4 relative z-0">
+        <div className="flex flex-col gap-1">
+          <CardTitle className="text-lg font-bold text-gray-900 leading-tight">
+            {product.name}
+          </CardTitle>
+          <div>
+            <span className={`inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold uppercase text-white shadow-sm transition-colors ${getTechBadgeColor(product.technology)}`}>
+              {product.technology || 'Selada'}
+            </span>
           </div>
         </div>
       </CardHeader>
 
       <CardContent className="pb-6">
-        <div className="grid grid-cols-2 gap-2 mt-4 mb-4 text-left">
+        <div className="grid grid-cols-2 gap-2 mt-2 mb-4">
           <div className="flex items-center gap-2 text-[11px] text-gray-600 bg-gray-50 p-2 rounded-lg border border-gray-100">
             <Zap className="h-3.5 w-3.5 text-blue-500" fill="currentColor" /> 
             <span>CCA: <strong className="text-gray-900">{product.cca || '--'}A</strong></span>

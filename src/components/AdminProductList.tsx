@@ -36,6 +36,7 @@ const AdminProductList = ({ products, onDelete, onEdit }: AdminProductListProps)
   const [sortBy, setSortBy] = useState("name-asc");
   const [statusFilter, setStatusFilter] = useState("all");
 
+  // --- Lógica de Filtragem e Ordenação ---
   const filteredAndSortedProducts = products
     .filter((p) => {
       const matchesSearch = p.name.toLowerCase().includes(searchTerm.toLowerCase());
@@ -129,25 +130,38 @@ const AdminProductList = ({ products, onDelete, onEdit }: AdminProductListProps)
           return (
             <div
               key={product.id}
-              className="bg-white border border-gray-200 p-4 flex flex-col sm:flex-row sm:items-center justify-between rounded-xl hover:shadow-sm transition-all animate-in slide-in-from-left duration-300"
+              className="bg-white border border-gray-200 p-4 flex flex-col sm:flex-row sm:items-center justify-between rounded-xl hover:shadow-sm transition-all animate-in slide-in-from-left duration-300 text-left"
               style={{ animationDelay: `${index * 30}ms` }}
             >
               <div className="flex-1 min-w-0 mb-4 sm:mb-0">
-                <div className="flex items-center gap-2 mb-1">
-                  <h4 className="font-bold text-gray-900 truncate">{product.name}</h4>
-                  {(isManualCard || isManualPix) ? (
-                    <span className="bg-amber-100 text-amber-700 text-[10px] px-2 py-0.5 rounded-full font-bold flex items-center gap-1 uppercase">
-                      <Calculator className="h-3 w-3" /> Manual
-                    </span>
-                  ) : (
-                    <span className="bg-blue-100 text-blue-700 text-[10px] px-2 py-0.5 rounded-full font-bold flex items-center gap-1 uppercase">
-                      <Zap className="h-3 w-3" /> Automático
-                    </span>
-                  )}
+                <div className="flex items-center gap-3 mb-1">
+                  {/* Miniatura da Imagem */}
+                  <div className="h-10 w-10 rounded border bg-gray-50 flex items-center justify-center overflow-hidden flex-shrink-0">
+                    {product.imageUrl ? (
+                      <img src={product.imageUrl} className="h-full w-full object-cover" />
+                    ) : (
+                      <Package className="h-5 w-5 text-gray-300" />
+                    )}
+                  </div>
+
+                  <div className="min-w-0">
+                    <div className="flex items-center gap-2">
+                      <h4 className="font-bold text-gray-900 truncate">{product.name}</h4>
+                      {(isManualCard || isManualPix) ? (
+                        <span className="bg-amber-100 text-amber-700 text-[10px] px-2 py-0.5 rounded-full font-bold flex items-center gap-1 uppercase">
+                          <Calculator className="h-3 w-3" /> Manual
+                        </span>
+                      ) : (
+                        <span className="bg-blue-100 text-blue-700 text-[10px] px-2 py-0.5 rounded-full font-bold flex items-center gap-1 uppercase">
+                          <Zap className="h-3 w-3" /> Automático
+                        </span>
+                      )}
+                    </div>
+                  </div>
                 </div>
 
-                {/* Exibição da Garantia e Tecnologia abaixo do nome */}
-                <div className="flex gap-2 mb-3">
+                {/* Características Técnicas (Garantia, Tecnologia, CCA) */}
+                <div className="flex flex-wrap gap-2 mb-3 ml-[52px]">
                     <span className="text-[10px] font-bold uppercase px-1.5 py-0.5 bg-gray-100 text-gray-600 rounded flex items-center gap-1">
                         <Settings className="h-3 w-3" /> {product.technology || 'Selada'}
                     </span>
@@ -156,12 +170,12 @@ const AdminProductList = ({ products, onDelete, onEdit }: AdminProductListProps)
                     </span>
                     {(product.cca || product.ca) && (
                         <span className="text-[10px] font-bold uppercase px-1.5 py-0.5 bg-blue-50 text-blue-600 rounded">
-                            {product.cca}A / {product.ca}A
+                            {product.cca ? `${product.cca}A CCA` : ''} {product.ca ? `| ${product.ca}A CA` : ''}
                         </span>
                     )}
                 </div>
                 
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 mr-4">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 mr-4 ml-[52px] sm:ml-0">
                   <div className="bg-gray-50 p-2 rounded-lg border border-gray-100 flex flex-col justify-center">
                     <p className="text-[10px] text-gray-400 uppercase font-bold">Custo</p>
                     <p className="text-sm font-semibold text-gray-700">{formatCurrency(product.costPrice)}</p>

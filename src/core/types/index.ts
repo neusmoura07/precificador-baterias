@@ -10,6 +10,7 @@ export interface Product {
   technology: string;    // Ex: "Selada", "EFB", "AGM"
   ri?: string;           // Ex: "5.2"
   ca?: string;           // Ex: "550"
+  imageUrl?: string;
 }
 
 export interface PricingConfig {
