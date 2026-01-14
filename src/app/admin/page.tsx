@@ -42,13 +42,20 @@ export default function AdminPage() {
   };
 
   // --- LÓGICA DE PRODUTOS ATUALIZADA ---
-  const handleFormSubmit = async (data: any) => {
-  if (editingProduct) {
-    await updateProduct(editingProduct.id, data);
-    setEditingProduct(null);
-  } else {
-    // CORREÇÃO: Passando o objeto 'data' inteiro para o serviço
-    await createProduct(data);
+  // Dentro do componente AdminPage...
+
+const handleFormSubmit = async (data: any) => {
+  try {
+    if (editingProduct) {
+      await updateProduct(editingProduct.id, data);
+      setEditingProduct(null);
+    } else {
+      // CORREÇÃO: Passando o objeto 'data' completo para o serviço, 
+      // resolvendo o erro de "Expected 1 arguments, but got 2"
+      await createProduct(data);
+    }
+  } catch (error) {
+    console.error("Erro no formulário:", error);
   }
 };
 

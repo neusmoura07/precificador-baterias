@@ -17,7 +17,15 @@ export function ProductForm() {
     setMessage(null);
 
     try {
-      await createProduct(name, Number(cost));
+      // CORREÇÃO: Envie o objeto completo incluindo a propriedade 'active'
+      await createProduct({ 
+        name: name.trim(), 
+        costPrice: Number(cost),
+        warranty: "12 meses", 
+        technology: "Selada",
+        cca: "",
+        active: true // Adicionado para satisfazer o requisito do tipo Omit<Product, "id">
+      });
       
       // Feedback visual e Limpeza
       setMessage({ type: 'success', text: 'Produto salvo com sucesso!' });
@@ -28,6 +36,7 @@ export function ProductForm() {
       setTimeout(() => setMessage(null), 3000);
 
     } catch (error) {
+      console.error("Erro ao salvar:", error);
       setMessage({ type: 'error', text: 'Erro ao salvar. Tente novamente.' });
     } finally {
       setLoading(false);
@@ -35,7 +44,7 @@ export function ProductForm() {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="bg-gray-50 p-6 rounded-lg border border-gray-200 mb-8">
+    <form onSubmit={handleSubmit} className="bg-gray-50 p-6 rounded-lg border border-gray-200 mb-8 text-left">
       <h3 className="text-lg font-bold text-gray-800 mb-4">Novo Produto</h3>
       
       <div className="grid gap-4 md:grid-cols-2">
@@ -47,7 +56,7 @@ export function ProductForm() {
             placeholder="Ex: Moura 60Ah"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            className="w-full p-3 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 text-gray-900"
+            className="w-full p-3 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 text-gray-900 outline-none"
             required
           />
         </div>
@@ -61,7 +70,7 @@ export function ProductForm() {
             placeholder="0.00"
             value={cost}
             onChange={(e) => setCost(e.target.value)}
-            className="w-full p-3 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 text-gray-900"
+            className="w-full p-3 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 text-gray-900 outline-none"
             required
           />
         </div>
@@ -69,11 +78,13 @@ export function ProductForm() {
 
       {/* Botão de Ação */}
       <div className="mt-4 flex items-center justify-between">
-        {message && (
-          <span className={`text-sm font-medium ${message.type === 'success' ? 'text-green-600' : 'text-red-600'}`}>
-            {message.text}
-          </span>
-        )}
+        <div className="h-5">
+          {message && (
+            <span className={`text-sm font-medium ${message.type === 'success' ? 'text-green-600' : 'text-red-600'}`}>
+              {message.text}
+            </span>
+          )}
+        </div>
         
         <button
           type="submit"

@@ -7,17 +7,15 @@ import { Product } from "@/core/types";
 import { usePricedProducts } from "@/hooks/usePricedProducts";
 
 interface AdminProductFormProps {
-  onSubmit: (data: any) => Promise<void> | void; // Alterado para suportar async
+  onSubmit: (data: any) => Promise<void> | void;
   productToEdit?: Product | null;
   onCancelEdit?: () => void;
 }
 
 const AdminProductForm = ({ onSubmit, productToEdit, onCancelEdit }: AdminProductFormProps) => {
-  // Estados de controle visual
   const [isSaving, setIsSaving] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
 
-  // Estados dos campos (mantidos)
   const [name, setName] = useState("");
   const [costPrice, setCostPrice] = useState("");
   const [manualPrice, setManualPrice] = useState("");
@@ -65,15 +63,19 @@ const AdminProductForm = ({ onSubmit, productToEdit, onCancelEdit }: AdminProduc
     if (name.trim() && costPrice) {
       setIsSaving(true);
       try {
+        // CORREÇÃO: Enviando o objeto único esperado pela função createProduct no serviço
         await onSubmit({
           name: name.trim(),
           costPrice: parseFloat(costPrice),
           manualPrice: manualPrice ? parseFloat(manualPrice) : undefined,
           manualPixPrice: manualPixPrice ? parseFloat(manualPixPrice) : undefined,
-          warranty, cca, technology, ri, ca
+          warranty, 
+          cca, 
+          technology, 
+          ri, 
+          ca
         });
         
-        // Ativa feedback de sucesso
         setSaveSuccess(true);
         setTimeout(() => setSaveSuccess(false), 2500);
 
@@ -90,7 +92,7 @@ const AdminProductForm = ({ onSubmit, productToEdit, onCancelEdit }: AdminProduc
   };
 
   return (
-    <form onSubmit={handleSubmit} className="bg-card border border-border p-5 rounded-xl space-y-6 shadow-sm">
+    <form onSubmit={handleSubmit} className="bg-card border border-border p-5 rounded-xl space-y-6 shadow-sm text-left">
       <div className="flex justify-between items-center border-b pb-3 mb-2">
         <h3 className="font-semibold text-foreground flex items-center gap-2 text-lg">
           {productToEdit ? <Save className="h-5 w-5 text-blue-500" /> : <Plus className="h-5 w-5 text-primary" />}
@@ -104,11 +106,11 @@ const AdminProductForm = ({ onSubmit, productToEdit, onCancelEdit }: AdminProduc
       </div>
       
       <div className="grid gap-4 sm:grid-cols-2">
-        <div className="space-y-2 text-left">
+        <div className="space-y-2">
           <Label htmlFor="product-name">Nome comercial</Label>
           <Input id="product-name" value={name} onChange={(e) => setName(e.target.value)} placeholder="Ex: Moura 60Ah" className="h-12" required />
         </div>
-        <div className="space-y-2 text-left">
+        <div className="space-y-2">
           <Label htmlFor="cost-price">Preço de Custo (R$)</Label>
           <Input id="cost-price" type="number" step="0.01" value={costPrice} onChange={(e) => setCostPrice(e.target.value)} placeholder="0,00" className="h-12" required />
         </div>
@@ -117,7 +119,7 @@ const AdminProductForm = ({ onSubmit, productToEdit, onCancelEdit }: AdminProduc
       <div className="grid gap-4 md:grid-cols-2">
         <div className="p-4 bg-blue-50/50 rounded-lg border border-blue-100 space-y-3">
           <div className="flex items-center justify-between">
-            <Label htmlFor="manual-price" className="flex items-center gap-2 text-blue-900 font-bold text-xs uppercase text-left">
+            <Label htmlFor="manual-price" className="flex items-center gap-2 text-blue-900 font-bold text-xs uppercase">
               <Calculator className="h-4 w-4" /> Venda Final (Cartão)
             </Label>
             {simulatedCardPrice > 0 && (
@@ -131,7 +133,7 @@ const AdminProductForm = ({ onSubmit, productToEdit, onCancelEdit }: AdminProduc
 
         <div className="p-4 bg-green-50/50 rounded-lg border border-green-100 space-y-3">
           <div className="flex items-center justify-between">
-            <Label htmlFor="manual-pix" className="flex items-center gap-2 text-green-900 font-bold text-xs uppercase text-left">
+            <Label htmlFor="manual-pix" className="flex items-center gap-2 text-green-900 font-bold text-xs uppercase">
               <Zap className="h-4 w-4" /> Venda Final (Pix)
             </Label>
             {simulatedPixPrice > 0 && (
@@ -145,12 +147,12 @@ const AdminProductForm = ({ onSubmit, productToEdit, onCancelEdit }: AdminProduc
       </div>
 
       <div className="p-5 bg-gray-50/50 rounded-xl border border-gray-200 space-y-4">
-        <h4 className="font-bold text-gray-700 text-xs flex items-center gap-2 uppercase tracking-wider text-left">
+        <h4 className="font-bold text-gray-700 text-xs flex items-center gap-2 uppercase tracking-wider">
           <Settings className="h-4 w-4 text-gray-500" /> Características Técnicas
         </h4>
         
         <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-          <div className="space-y-1.5 text-left">
+          <div className="space-y-1.5">
             <Label className="text-xs">Tecnologia</Label>
             <select value={technology} onChange={(e) => setTechnology(e.target.value)} className="w-full h-10 px-3 rounded-md border border-input bg-background text-sm outline-none focus:ring-2 focus:ring-primary">
               <option value="Selada">Selada</option>
@@ -161,7 +163,7 @@ const AdminProductForm = ({ onSubmit, productToEdit, onCancelEdit }: AdminProduc
             </select>
           </div>
 
-          <div className="space-y-1.5 text-left">
+          <div className="space-y-1.5">
             <Label className="text-xs">Garantia</Label>
             <select value={warranty} onChange={(e) => setWarranty(e.target.value)} className="w-full h-10 px-3 rounded-md border border-input bg-background text-sm outline-none focus:ring-2 focus:ring-primary">
               <option value="12 meses">12 meses</option>
@@ -171,24 +173,23 @@ const AdminProductForm = ({ onSubmit, productToEdit, onCancelEdit }: AdminProduc
             </select>
           </div>
 
-          <div className="space-y-1.5 text-left">
+          <div className="space-y-1.5">
             <Label className="text-xs">CCA (A)</Label>
             <Input value={cca} onChange={(e) => setCca(e.target.value)} placeholder="Ex: 480" className="h-10" />
           </div>
 
-          <div className="space-y-1.5 text-left">
+          <div className="space-y-1.5">
             <Label className="text-xs">CA (A)</Label>
             <Input value={ca} onChange={(e) => setCa(e.target.value)} placeholder="Ex: 550" className="h-10" />
           </div>
 
-          <div className="space-y-1.5 text-left">
+          <div className="space-y-1.5">
             <Label className="text-xs">RI (mΩ)</Label>
             <Input value={ri} onChange={(e) => setRi(e.target.value)} placeholder="Ex: 4.8" className="h-10" />
           </div>
         </div>
       </div>
       
-      {/* Botão com Feedback Visual */}
       <Button 
         type="submit" 
         disabled={isSaving}
@@ -204,7 +205,7 @@ const AdminProductForm = ({ onSubmit, productToEdit, onCancelEdit }: AdminProduc
           </span>
         ) : saveSuccess ? (
           <span className="flex items-center gap-2">
-            <CheckCircle2 className="h-5 w-5" /> Dados Salvos com Sucesso!
+            <CheckCircle2 className="h-5 w-5" /> Dados Salvos!
           </span>
         ) : (
           productToEdit ? "Salvar Alterações" : "Cadastrar Bateria"
