@@ -5,6 +5,11 @@ export interface Product {
   active: boolean;
   manualPrice?: number;
   manualPixPrice?: number;
+  warranty: string;      // Ex: "12 meses"
+  cca: string;           // Ex: "450"
+  technology: string;    // Ex: "Selada", "EFB", "AGM"
+  ri?: string;           // Ex: "5.2"
+  ca?: string;           // Ex: "550"
 }
 
 export interface PricingConfig {

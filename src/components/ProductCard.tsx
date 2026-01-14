@@ -1,6 +1,6 @@
 import { PricedProduct } from "@/core/types";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Battery, Zap, CreditCard } from "lucide-react";
+import { Battery, Zap, CreditCard, ShieldCheck, Activity } from "lucide-react";
 import { formatCurrency } from "@/lib/utils";
 
 interface ProductCardProps {
@@ -8,8 +8,18 @@ interface ProductCardProps {
 }
 
 export default function ProductCard({ product }: ProductCardProps) {
-  // A economia agora é baseada nos valores finais que já passaram pela lógica de prioridade
   const savings = product.cardPrice - product.cashPrice;
+
+  // Função para definir a cor baseada na tecnologia
+  const getTechBadgeColor = (tech: string) => {
+    switch (tech) {
+      case "EFB": return "bg-orange-600";
+      case "AGM": return "bg-purple-600";
+      case "Chumbo-Ácido": return "bg-slate-700";
+      case "Estacionária": return "bg-teal-600";
+      default: return "bg-blue-600"; // Padrão para Selada
+    }
+  };
 
   return (
     <Card className="group relative overflow-hidden bg-white transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-gray-100 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.1)]">
@@ -26,19 +36,42 @@ export default function ProductCard({ product }: ProductCardProps) {
             <div className="p-2.5 bg-blue-50 text-blue-600 rounded-xl group-hover:bg-blue-100 transition-colors">
               <Battery className="h-6 w-6" />
             </div>
-            <div>
+            <div className="flex flex-col gap-1 text-left">
               <CardTitle className="text-lg font-bold text-gray-900 leading-tight">
                 {product.name}
               </CardTitle>
-              <p className="text-sm text-gray-500 mt-0.5">Bateria Automotiva</p>
+              {/* Selo com Cor Dinâmica */}
+              <div>
+                <span className={`inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold uppercase text-white shadow-sm transition-colors ${getTechBadgeColor(product.technology)}`}>
+                  {product.technology || 'Selada'}
+                </span>
+              </div>
             </div>
           </div>
         </div>
       </CardHeader>
 
       <CardContent className="pb-6">
-        <div className="space-y-4 mt-4">
-          {/* Preço PIX */}
+        <div className="grid grid-cols-2 gap-2 mt-4 mb-4 text-left">
+          <div className="flex items-center gap-2 text-[11px] text-gray-600 bg-gray-50 p-2 rounded-lg border border-gray-100">
+            <Zap className="h-3.5 w-3.5 text-blue-500" fill="currentColor" /> 
+            <span>CCA: <strong className="text-gray-900">{product.cca || '--'}A</strong></span>
+          </div>
+          <div className="flex items-center gap-2 text-[11px] text-gray-600 bg-gray-50 p-2 rounded-lg border border-gray-100">
+            <Activity className="h-3.5 w-3.5 text-orange-500" /> 
+            <span>CA: <strong className="text-gray-900">{product.ca || '--'}A</strong></span>
+          </div>
+          <div className="flex items-center gap-2 text-[11px] text-gray-600 bg-gray-50 p-2 rounded-lg border border-gray-100">
+            <ShieldCheck className="h-3.5 w-3.5 text-green-500" /> 
+            <span>Garantia: <strong className="text-gray-900">{product.warranty || '12m'}</strong></span>
+          </div>
+          <div className="flex items-center gap-2 text-[11px] text-gray-600 bg-gray-50 p-2 rounded-lg border border-gray-100">
+             <Activity className="h-3.5 w-3.5 text-amber-500" /> 
+             <span>RI: <strong className="text-gray-900">{product.ri ? `${product.ri} mΩ` : '--'}</strong></span>
+          </div>
+        </div>
+
+        <div className="space-y-4">
           <div className="bg-green-50 p-4 rounded-xl border border-green-100 relative overflow-hidden">
             <div className="absolute top-0 right-0 p-2 opacity-10">
               <Zap className="h-12 w-12 text-green-600" fill="currentColor" />
@@ -53,7 +86,6 @@ export default function ProductCard({ product }: ProductCardProps) {
             </div>
           </div>
 
-          {/* Preço Cartão */}
           <div className="px-4 flex items-center justify-between py-2 bg-gray-50 rounded-lg">
             <div className="flex items-center gap-2 text-gray-600">
               <CreditCard className="h-4 w-4" />

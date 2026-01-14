@@ -26,15 +26,17 @@ export const getProducts = async (): Promise<Product[]> => {
   );
 };
 
-export const createProduct = async (name: string, costPrice: number, manualPrice?: number, manualPixPrice?: number) => {
+// Modificado para aceitar o objeto completo de características
+export const createProduct = async (productData: Omit<Product, 'id'>) => {
   try {
     await addDoc(collection(db, COLLECTION), {
-      name: name.trim(),
-      costPrice: Number(costPrice), // Garante que salva como número
-      manualPrice: manualPrice || null, // Salva null se não for enviado
-      manualPixPrice: manualPixPrice || null,
+      ...productData,
+      name: productData.name.trim(),
+      costPrice: Number(productData.costPrice),
+      manualPrice: productData.manualPrice || null,
+      manualPixPrice: productData.manualPixPrice || null,
       active: true,
-      createdAt: new Date(), // Útil para ordenação futura
+      createdAt: new Date().toISOString(),
     });
   } catch (error) {
     console.error("Erro ao criar produto:", error);
@@ -42,13 +44,12 @@ export const createProduct = async (name: string, costPrice: number, manualPrice
   }
 };
 
-// Editar produto 
-export const updateProduct = async (id: string, data: { name: string; costPrice: number; manualPrice?: number, manualPixPrice?: number }) => {
+// Modificado para aceitar o objeto completo na atualização
+export const updateProduct = async (id: string, data: Partial<Product>) => {
   try {
-    const productRef = doc(db, "products", id);
+    const productRef = doc(db, COLLECTION, id);
     await updateDoc(productRef, {
-      name: data.name,
-      costPrice: data.costPrice,
+      ...data,
       manualPrice: data.manualPrice || null,
       manualPixPrice: data.manualPixPrice || null,
       updatedAt: new Date().toISOString()

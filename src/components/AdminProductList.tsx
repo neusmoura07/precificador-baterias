@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Trash2, Edit, Package, Calculator, Zap, AlertTriangle, Search, ArrowUpDown, Filter, Info } from "lucide-react";
+import { Trash2, Edit, Package, Calculator, Zap, AlertTriangle, Search, ArrowUpDown, Filter, Info, ShieldCheck, Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Product } from "@/core/types";
@@ -36,7 +36,6 @@ const AdminProductList = ({ products, onDelete, onEdit }: AdminProductListProps)
   const [sortBy, setSortBy] = useState("name-asc");
   const [statusFilter, setStatusFilter] = useState("all");
 
-  // --- Lógica de Filtragem e Ordenação ---
   const filteredAndSortedProducts = products
     .filter((p) => {
       const matchesSearch = p.name.toLowerCase().includes(searchTerm.toLowerCase());
@@ -120,11 +119,9 @@ const AdminProductList = ({ products, onDelete, onEdit }: AdminProductListProps)
           const divisor = config?.markupDivisor || 1;
           const autoCardPrice = product.costPrice / divisor;
           
-          // Lógica de Cartão
           const isManualCard = !!(product.manualPrice && product.manualPrice > 0);
           const finalCardPrice = isManualCard ? product.manualPrice! : autoCardPrice;
 
-          // Lógica de Pix
           const isManualPix = !!(product.manualPixPrice && product.manualPixPrice > 0);
           const autoPixPrice = finalCardPrice * (1 - (config?.cashDiscount || 0));
           const finalPixPrice = isManualPix ? product.manualPixPrice! : autoPixPrice;
@@ -136,7 +133,7 @@ const AdminProductList = ({ products, onDelete, onEdit }: AdminProductListProps)
               style={{ animationDelay: `${index * 30}ms` }}
             >
               <div className="flex-1 min-w-0 mb-4 sm:mb-0">
-                <div className="flex items-center gap-2 mb-3">
+                <div className="flex items-center gap-2 mb-1">
                   <h4 className="font-bold text-gray-900 truncate">{product.name}</h4>
                   {(isManualCard || isManualPix) ? (
                     <span className="bg-amber-100 text-amber-700 text-[10px] px-2 py-0.5 rounded-full font-bold flex items-center gap-1 uppercase">
@@ -148,6 +145,21 @@ const AdminProductList = ({ products, onDelete, onEdit }: AdminProductListProps)
                     </span>
                   )}
                 </div>
+
+                {/* Exibição da Garantia e Tecnologia abaixo do nome */}
+                <div className="flex gap-2 mb-3">
+                    <span className="text-[10px] font-bold uppercase px-1.5 py-0.5 bg-gray-100 text-gray-600 rounded flex items-center gap-1">
+                        <Settings className="h-3 w-3" /> {product.technology || 'Selada'}
+                    </span>
+                    <span className="text-[10px] font-bold uppercase px-1.5 py-0.5 bg-green-100 text-green-700 rounded flex items-center gap-1">
+                        <ShieldCheck className="h-3 w-3" /> {product.warranty || '12 meses'}
+                    </span>
+                    {(product.cca || product.ca) && (
+                        <span className="text-[10px] font-bold uppercase px-1.5 py-0.5 bg-blue-50 text-blue-600 rounded">
+                            {product.cca}A / {product.ca}A
+                        </span>
+                    )}
+                </div>
                 
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 mr-4">
                   <div className="bg-gray-50 p-2 rounded-lg border border-gray-100 flex flex-col justify-center">
@@ -155,7 +167,7 @@ const AdminProductList = ({ products, onDelete, onEdit }: AdminProductListProps)
                     <p className="text-sm font-semibold text-gray-700">{formatCurrency(product.costPrice)}</p>
                   </div>
 
-                  {/* Venda Cartão com Sugerido acima */}
+                  {/* Venda Cartão */}
                   <div className={`relative p-2 rounded-lg border ${isManualCard ? 'bg-amber-50 border-amber-100 pt-5' : 'bg-blue-50 border-blue-100'}`}>
                     {isManualCard && (
                       <span className="absolute top-1 left-2 text-[8px] text-amber-600 font-bold uppercase flex items-center gap-0.5">
@@ -168,7 +180,7 @@ const AdminProductList = ({ products, onDelete, onEdit }: AdminProductListProps)
                     <p className={`text-sm font-bold ${isManualCard ? 'text-amber-700' : 'text-blue-700'}`}>{formatCurrency(finalCardPrice)}</p>
                   </div>
 
-                  {/* Venda Pix com Sugerido acima */}
+                  {/* Venda Pix */}
                   <div className={`relative p-2 rounded-lg border ${isManualPix ? 'bg-amber-50 border-amber-100 pt-5' : 'bg-green-50 border-green-100'}`}>
                     {isManualPix && (
                       <span className="absolute top-1 left-2 text-[8px] text-amber-600 font-bold uppercase flex items-center gap-0.5">

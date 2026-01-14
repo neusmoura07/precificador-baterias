@@ -42,15 +42,15 @@ export default function AdminPage() {
   };
 
   // --- LÓGICA DE PRODUTOS ATUALIZADA ---
-  const handleFormSubmit = async (data: { name: string; costPrice: number; manualPrice?: number; manualPixPrice?: number }) => {
-    if (editingProduct) {
-      await updateProduct(editingProduct.id, data);
-      setEditingProduct(null);
-    } else {
-      // CORREÇÃO: Enviando também o manualPixPrice na criação de novos produtos
-      await createProduct(data.name, data.costPrice, data.manualPrice, data.manualPixPrice);
-    }
-  };
+  const handleFormSubmit = async (data: any) => {
+  if (editingProduct) {
+    await updateProduct(editingProduct.id, data);
+    setEditingProduct(null);
+  } else {
+    // CORREÇÃO: Passando o objeto 'data' inteiro para o serviço
+    await createProduct(data);
+  }
+};
 
   const handleDeleteProduct = async (id: string) => {
     await deleteProduct(id);
